@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
+	"os"
 
 	blevestore "github.com/carlosEA28/openTui_mcp_server/pkg/lib/bleve"
 	"github.com/carlosEA28/openTui_mcp_server/pkg/tools"
@@ -10,9 +12,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-const indexPath = "/home/carloseduardo/Desktop/pastaProjetosGit/go/openTUI_mcp/data/index"
-
 func main() {
+	indexPath := os.Getenv("INDEX_PATH")
+	if indexPath == "" {
+		indexPath = "/home/carloseduardo/Desktop/pastaProjetosGit/go/openTUI_mcp/data/index"
+	}
+
 	store, err := blevestore.Open(indexPath)
 	if err != nil {
 		log.Fatalf("failed to open index: %v", err)
@@ -32,7 +37,31 @@ func main() {
 		return result, nil, err
 	})
 
-	if err := server.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
-		log.Fatalf("server error: %v", err)
+	transport := os.Getenv("TRANSPORT")
+
+	switch transport {
+	case "http":
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = "8080"
+		}
+
+		handler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
+			return server
+		}, &mcp.StreamableHTTPOptions{
+			Stateless: true,
+		})
+
+		http.Handle("/mcp", handler)
+		log.Printf("opentui-mcp listening on :%s", port)
+
+		if err := http.ListenAndServe(":"+port, nil); err != nil {
+			log.Fatalf("http server error: %v", err)
+		}
+
+	default: // stdio — uso local
+		if err := server.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
+			log.Fatalf("server error: %v", err)
+		}
 	}
 }
