@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"time"
 
+	"github.com/carlosEA28/openTui_mcp_server/pkg/helpers"
 	"github.com/carlosEA28/openTui_mcp_server/pkg/http"
 )
 
@@ -18,5 +18,7 @@ func main() {
 		return
 	}
 
-	fmt.Print(string(fetch))
+	helpers.Parser(fetch)
+
+	//fmt.Print(string(fetch))
 }

@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// Fetch performs an HTTP GET request to the specified URL and returns the response body as a byte slice. It uses the provided context for cancellation and timeout control.
 func Fetch(ctx context.Context, url string) ([]byte, error) {
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
