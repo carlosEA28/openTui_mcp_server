@@ -30,7 +30,7 @@ mise install
 
 ```bash
 cd /path/to/openTUI_mcp
-mise exec -- go build -o opentui_mcp_server ./cmd/main.go
+mise exec -- go build -o opentui_mcp_server ./cmd/
 ```
 
 ### Configuration
@@ -84,7 +84,7 @@ INDEX_PATH=./data/index mise exec -- go run ./cmd/ingest/main.go
 
 ```bash
 cd /path/to/openTUI_mcp
-mise exec -- go build -o opentui_mcp_server ./cmd/main.go
+mise exec -- go build -o opentui_mcp_server ./cmd/
 ```
 
 ```bash
