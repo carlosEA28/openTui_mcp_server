@@ -95,35 +95,35 @@ TRANSPORT=http PORT=8080 INDEX_PATH=./data/index ./opentui_mcp_server
 
 ## Install in MCP Hosts
 
-### Claude Desktop
+### HTTP (remote server)
 
-Edit `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "opentui-mcp": {
-      "command": "/path/to/opentui_mcp_server"
-    }
-  }
-}
-```
-
-### OpenCode (CLI)
-
-Point OpenCode to the compiled binary using an absolute path. Example:
+**Claude Desktop** — edit `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "opentui-mcp": {
-      "command": "/absolute/path/to/opentui_mcp_server"
+      "type": "http",
+      "url": "http://localhost:8080/mcp"
     }
   }
 }
 ```
 
-> Configuration file names and locations vary by host. Use the MCP configuration format supported by your OpenCode installation.
+**OpenCode** — edit `~/.config/opencode/config.json`:
+
+```json
+{
+  "mcp": {
+    "opentui-mcp": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp"
+    }
+  }
+}
+```
+
+> For remote deploys (Render, etc.), replace `http://localhost:8080` with your deployed URL.
 
 ---
 
