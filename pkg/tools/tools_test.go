@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -123,6 +124,71 @@ func TestSearchDocsRejectsMissingParams(t *testing.T) {
 	_, _, err := SearchDocs(context.Background(), &mcp.CallToolRequest{}, types.SearchDocsArgs{Query: "install"}, store)
 	if err == nil {
 		t.Fatalf("expected error for missing params")
+	}
+	if !strings.Contains(err.Error(), "missing tool params") {
+		t.Fatalf("expected missing params error, got %v", err)
+	}
+}
+
+func TestSearchDocsReturnsEmptyResultsWhenNoMatch(t *testing.T) {
+	store := newTestStore(t)
+	indexDocs(t, store, 1, "install guide")
+
+	result, output, err := SearchDocs(context.Background(), newToolRequest(), types.SearchDocsArgs{Query: "unrelated"}, store)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result == nil {
+		t.Fatalf("expected non-nil result")
+	}
+	if output.Query != "unrelated" {
+		t.Fatalf("expected query to be preserved, got %q", output.Query)
+	}
+	if len(output.Results) != 0 {
+		t.Fatalf("expected no results, got %d", len(output.Results))
+	}
+}
+
+func TestSearchDocsReturnsJSONContentMatchingOutput(t *testing.T) {
+	store := newTestStore(t)
+	indexDocs(t, store, 1, "install guide")
+
+	result, output, err := SearchDocs(context.Background(), newToolRequest(), types.SearchDocsArgs{Query: "install"}, store)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result == nil || len(result.Content) != 1 {
+		t.Fatalf("expected single content entry")
+	}
+
+	textContent, ok := result.Content[0].(*mcp.TextContent)
+	if !ok {
+		t.Fatalf("expected text content, got %T", result.Content[0])
+	}
+
+	var decoded types.SearchDocsOutput
+	if err := json.Unmarshal([]byte(textContent.Text), &decoded); err != nil {
+		t.Fatalf("failed to decode JSON content: %v", err)
+	}
+	if decoded.Query != output.Query {
+		t.Fatalf("expected decoded query %q, got %q", output.Query, decoded.Query)
+	}
+	if len(decoded.Results) != len(output.Results) {
+		t.Fatalf("expected %d decoded results, got %d", len(output.Results), len(decoded.Results))
+	}
+	if len(decoded.Results) > 0 {
+		if decoded.Results[0].Title == "" || decoded.Results[0].Text == "" || decoded.Results[0].URL == "" {
+			t.Fatalf("expected decoded result fields to be populated")
+		}
+	}
+}
+
+func TestSearchDocsRejectsNilRequest(t *testing.T) {
+	store := newTestStore(t)
+
+	_, _, err := SearchDocs(context.Background(), nil, types.SearchDocsArgs{Query: "install"}, store)
+	if err == nil {
+		t.Fatalf("expected error for nil request")
 	}
 	if !strings.Contains(err.Error(), "missing tool params") {
 		t.Fatalf("expected missing params error, got %v", err)
