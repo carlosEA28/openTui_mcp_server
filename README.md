@@ -116,7 +116,7 @@ TRANSPORT=http PORT=8080 INDEX_PATH=./data/index ./opentui_mcp_server
 {
   "mcp": {
     "opentui-mcp": {
-      "type": "http",
+      "type": "remote",
       "url": "http://localhost:8080/mcp"
     }
   }

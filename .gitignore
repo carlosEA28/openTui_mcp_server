@@ -2,3 +2,4 @@
 ./opentui-mcp
 .env
 data/
+opentui_mcp_server
