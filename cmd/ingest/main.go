@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/carlosEA28/openTui_mcp_server/internal/ingestion"
@@ -11,8 +13,8 @@ import (
 )
 
 const (
-	configPath    = "/home/carloseduardo/Desktop/pastaProjetosGit/go/openTUI_mcp/config.yaml"
-	dataIndexPath = "/home/carloseduardo/Desktop/pastaProjetosGit/go/openTUI_mcp/data/index"
+	defaultConfigPath = "config.yaml"
+	defaultIndexPath  = "data/index"
 )
 
 func parseConfig(path string) ([]string, error) {
@@ -35,6 +37,13 @@ func parseConfig(path string) ([]string, error) {
 }
 
 func main() {
+	configFlag := flag.String("config", defaultConfigPath, "Path to config.yaml")
+	indexFlag := flag.String("index", defaultIndexPath, "Path to Bleve index directory")
+	flag.Parse()
+
+	configPath := filepath.Clean(*configFlag)
+	dataIndexPath := filepath.Clean(*indexFlag)
+
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("config.yaml not found at %s", configPath)
 	}

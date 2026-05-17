@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	blevestore "github.com/carlosEA28/openTui_mcp_server/pkg/lib/bleve"
 	"github.com/carlosEA28/openTui_mcp_server/pkg/tools"
@@ -15,7 +16,17 @@ import (
 func main() {
 	indexPath := os.Getenv("INDEX_PATH")
 	if indexPath == "" {
-		indexPath = "/home/carloseduardo/Desktop/pastaProjetosGit/go/openTUI_mcp/data/index"
+		candidate := filepath.Join("data", "index")
+		if _, err := os.Stat(candidate); err == nil {
+			indexPath = candidate
+		} else {
+			alt := filepath.Join("openTUI_mcp", "data", "index")
+			if _, err := os.Stat(alt); err == nil {
+				indexPath = alt
+			} else {
+				indexPath = candidate
+			}
+		}
 	}
 
 	store, err := blevestore.Open(indexPath)
