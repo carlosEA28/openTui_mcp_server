@@ -60,7 +60,8 @@ func main() {
 		handler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 			return server
 		}, &mcp.StreamableHTTPOptions{
-			Stateless: true,
+			Stateless:                  true,
+			DisableLocalhostProtection: true,
 		})
 
 		http.Handle("/mcp", handler)
