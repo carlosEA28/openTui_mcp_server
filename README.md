@@ -104,7 +104,7 @@ TRANSPORT=http PORT=8080 INDEX_PATH=./data/index ./opentui_mcp_server
   "mcpServers": {
     "opentui-mcp": {
       "type": "http",
-      "url": "http://localhost:8080/mcp"
+      "url": "https://opentui-mcp-server.onrender.com/mcp"
     }
   }
 }
@@ -117,13 +117,13 @@ TRANSPORT=http PORT=8080 INDEX_PATH=./data/index ./opentui_mcp_server
   "mcp": {
     "opentui-mcp": {
       "type": "remote",
-      "url": "http://localhost:8080/mcp"
+      "url": "https://opentui-mcp-server.onrender.com/mcp"
     }
   }
 }
 ```
 
-> For remote deploys (Render, etc.), replace `http://localhost:8080` with your deployed URL.
+> For remote deploys (Render, etc.), use `https://opentui-mcp-server.onrender.com/mcp`.
 
 ---
 
